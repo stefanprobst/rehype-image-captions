@@ -1,32 +1,60 @@
 {
   "name": "@stefanprobst/rehype-image-captions",
-  "version": "1.0.0",
-  "main": "./dist/index.js",
+  "version": "1.1.0",
+  "main": "./src/index.js",
   "license": "MIT",
   "type": "module",
+  "types": "./src/index.d.ts",
   "exports": {
-    ".": "./dist/index.js"
+    "types": "./src/index.d.ts",
+    "import": "./src/index.js"
   },
   "files": [
-    "dist"
+    "src"
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsc -p tsconfig.json",
     "format": "prettier . --list-different --ignore-path .gitignore",
     "format:fix": "yarn format --write",
-    "prepublishOnly": "yarn run build"
+    "prepare": "simple-git-hooks || true",
+    "test": "cross-env NODE_OPTIONS='--experimental-vm-modules' uvu test",
+    "validate": "yarn run format && yarn run test"
+  },
+  "engines": {
+    "node": ">=14.17",
+    "yarn": "1.x"
   },
   "dependencies": {
     "@types/hast": "^2.3.4",
     "hastscript": "^7.0.2",
-    "unified": "^10.1.1",
-    "unist-util-visit": "^4.1.0"
+    "unified": "^10.1.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^15.0.0",
+    "@stefanprobst/commitlint-config": "^1.0.2",
     "@stefanprobst/prettier-config": "^2.0.0",
+    "cross-env": "^7.0.3",
+    "lint-staged": "^12.1.2",
     "prettier": "^2.4.1",
-    "typescript": "^4.4.4"
+    "rehype-stringify": "^9.0.2",
+    "remark-parse": "^10.0.1",
+    "remark-rehype": "^10.0.1",
+    "simple-git-hooks": "^2.7.0",
+    "uvu": "^0.5.2"
   },
-  "prettier": "@stefanprobst/prettier-config"
+  "commitlint": {
+    "extends": "@stefanprobst/commitlint-config"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write"
+    ],
+    "*.@(json|md)": "prettier --write"
+  },
+  "prettier": "@stefanprobst/prettier-config",
+  "simple-git-hooks": {
+    "commit-msg": "yarn commitlint --edit",
+    "pre-commit": "yarn lint-staged",
+    "pre-push": "yarn run validate"
+  }
 }
